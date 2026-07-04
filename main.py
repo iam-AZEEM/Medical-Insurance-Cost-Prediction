@@ -1,4 +1,5 @@
 import os
+from dotenv import load_dotenv
 os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["OMP_NUM_THREADS"] = "1"
 from flask import Flask, jsonify, request, render_template, redirect, url_for, session
@@ -12,8 +13,12 @@ medical_insurance_obj = MedicalInsurance()
 
 app = Flask(__name__)
 
-app.config["JWT_SECRET_KEY"] = "secret"
-app.config["SECRET_KEY"] = "flask-session-secret"
+load_dotenv()
+
+app.config["JWT_SECRET_KEY"] = os.getenv("JWT_SECRET_KEY", "dev-secret")
+app.config["SECRET_KEY"] = os.getenv("SECRET_KEY", "dev-secret")
+
+
 jwt = JWTManager(app)
 
 
@@ -123,6 +128,12 @@ def predict_charges():
     prediction = medical_insurance_obj.predict_charges(user_input_data)
     return jsonify({"Predicted Charges": prediction[0]})
 
-if __name__ == "__main__":
-    app.run(host = config.FLASK_HOST, port = config.FLASK_PORT,debug = True)
 
+
+if __name__ == "__main__":
+    debug_mode = os.getenv("FLASK_ENV") != "production"
+    app.run(
+        host=config.FLASK_HOST, 
+        port=config.FLASK_PORT, 
+        debug=debug_mode
+    )
