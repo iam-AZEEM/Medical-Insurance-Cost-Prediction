@@ -9,6 +9,7 @@ import config
 from src.utils import MedicalInsurance
 import datetime
 
+
 medical_insurance_obj = MedicalInsurance()
 
 app = Flask(__name__)
@@ -26,6 +27,7 @@ mongo_client = pymongo.MongoClient(config.MONGO_URL)
 db = mongo_client[config.db_name]
 user_collection = db[config.user_collection_name]
 
+#Application routes
 @app.route("/")
 def home():
     return redirect(url_for("login_page"))
